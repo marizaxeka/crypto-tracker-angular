@@ -1,3 +1,4 @@
+import { MESSAGES_CONTAINER_ID } from '@angular/cdk/a11y';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -16,9 +17,10 @@ import { DialogBoxComponent } from '../dialog-box/dialog-box.component';
 export class CoinTypeListComponent implements OnInit {
   bannerData: any = [];
   currency : string = "INR"
-  dataSource:any=[]
-
-  // dataSource!: MatTableDataSource<any>;
+  coinId:any
+  // dataSource:any=[]
+  editData:any
+  dataSource!: MatTableDataSource<any>;
   displayedColumns: string[] = ['symbol', 'current_price', 'price_change_percentage_24h', 'market_cap','action'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -43,6 +45,7 @@ export class CoinTypeListComponent implements OnInit {
         this.bannerData = res;
       })
   }
+
   getAllData() {
     this.api.getCurrency(this.currency)
       .subscribe((res: any[] | undefined) => {
@@ -52,62 +55,35 @@ export class CoinTypeListComponent implements OnInit {
         this.dataSource.sort = this.sort;
       })
   }
+
+  
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
-
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
   }
+
   gotoDetails(row: any) {
     this.router.navigate(['coin-info',row.id])
   }
-
-
-
-openDialog(action:any,obj:any) {
-  obj.action = action;
-  const dialogRef = this.dialog.open(DialogBoxComponent, {
-    width: '250px',
-    data:obj
-  });
-
-  dialogRef.afterClosed().subscribe(result => {
-    if(result.event == 'Add'){
-      this.addRowData(result.data);
-    }else if(result.event == 'Update'){
-      this.updateRowData(result.data);
-    }else if(result.event == 'Delete'){
-      this.deleteRowData(result.data);
-    }
-  });
-}
-
-
-addRowData(row_obj:any){
-var d = new Date();
-this.dataSource.push({
-  id:d.getTime(),
-  name:row_obj.name
-});
-this.table.renderRows();
-
-}
-updateRowData(row_obj:any){
-this.dataSource = this.dataSource.filter((value:any,key:any)=>{
-  if(value.id == row_obj.id){
-    value.name = row_obj.name;
+ 
+  deleteRowData(currency:any) {
+    this.api.deleteCurrencyById(currency)
+      .subscribe((res: any[] | undefined) => {
+        this.getAllData()
+      })
   }
-  return true;
-});
+
+  updateRowData(currency: any) {
+    this.api.updateCurrencyById(currency).subscribe(result => {
+      this.editData = result;
+      if (this.editData != null) {
+      console.log();
+      }
+    });
 }
 
-deleteRowData(row_obj:any){
-this.dataSource = this.dataSource.filter((value:any,key:any)=>{
-  return value.id != row_obj.id;
-});
-}
-}
 
-
+}

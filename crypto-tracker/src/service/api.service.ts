@@ -1,5 +1,7 @@
+import { CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { elementAt } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -19,4 +21,12 @@ export class ApiService {
     getCurrencyById(coinId:string){
       return this.http.get<any>(`https://api.coingecko.com/api/v3/coins/${coinId}`)
     }
+    deleteCurrencyById(currency:string){
+      return this.http.delete<any>(`https://api.coingecko.com/api/v3/coins/${currency}`)
+    }
+    updateCurrencyById(currency:string){
+      return this.http.get<any>(`https://api.coingecko.com/api/v3/coins/${currency}`)
+
+    }
+
 }

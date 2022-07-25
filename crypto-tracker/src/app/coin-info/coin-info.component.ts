@@ -67,6 +67,7 @@ export class CoinInfoComponent implements OnInit {
   getCoinData(){
     this.api.getCurrencyById(this.coinId)
     .subscribe(res=>{
+
       console.log(this.coinData);
       if(this.currency === "USD"){
         res.market_data.current_price.inr = res.market_data.current_price.usd;
